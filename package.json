@@ -4,7 +4,7 @@
   "description": "Product Requirements as Code — an open-source toolkit that turns your GitHub repository into a self-managing autonomous development system",
   "main": "lib/shared.js",
   "bin": {
-    "prac": "./bin/prac.js"
+    "prac": "bin/prac.js"
   },
   "files": [
     "bin/",
@@ -42,7 +42,7 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ydax/prac-kit.git"
+    "url": "git+https://github.com/ydax/prac-kit.git"
   },
   "homepage": "https://github.com/ydax/prac-kit",
   "bugs": {
