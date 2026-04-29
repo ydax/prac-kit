@@ -1,0 +1,98 @@
+# .github/workflows/orchestrator.yml
+#
+# PRaC Orchestrator Pipeline — Story → Blueprint
+#
+# Trigger: Push to main adds/modifies/deletes a STORY.md in epics/
+# Action:  Runs orchestrate-story.js to generate Blueprint PRs
+#
+# Install via: npx @ydax/prac-kit init
+
+name: Orchestrator — Story to Blueprint
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'epics/**/stories/**/STORY.md'
+
+concurrency:
+  group: orchestrator
+  cancel-in-progress: false
+
+jobs:
+  orchestrate:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Detect changed STORY.md files
+        id: detect
+        run: |
+          ADDED_MODIFIED=$(git diff --name-only --diff-filter=AM HEAD~1 HEAD -- 'epics/**/stories/**/STORY.md' || true)
+          DELETED_STORIES=$(git diff --name-only --diff-filter=D HEAD~1 HEAD -- 'epics/**/stories/**/STORY.md' || true)
+
+          if [ -z "$ADDED_MODIFIED" ]; then
+            echo "stories=" >> "$GITHUB_OUTPUT"
+          else
+            echo "stories<<EOF" >> "$GITHUB_OUTPUT"
+            echo "$ADDED_MODIFIED" >> "$GITHUB_OUTPUT"
+            echo "EOF" >> "$GITHUB_OUTPUT"
+          fi
+
+          if [ -z "$DELETED_STORIES" ]; then
+            echo "deleted=" >> "$GITHUB_OUTPUT"
+          else
+            echo "deleted<<EOF" >> "$GITHUB_OUTPUT"
+            echo "$DELETED_STORIES" >> "$GITHUB_OUTPUT"
+            echo "EOF" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Configure Git identity
+        if: steps.detect.outputs.stories != '' || steps.detect.outputs.deleted != ''
+        run: |
+          git config user.name "PRaC Orchestrator"
+          git config user.email "orchestrator@prac-kit.dev"
+
+      - name: Run Orchestrator for new/modified stories
+        if: steps.detect.outputs.stories != ''
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "${{ steps.detect.outputs.stories }}" | while IFS= read -r story_path; do
+            if [ -n "$story_path" ]; then
+              echo "═══ 🎯 Processing: $story_path ═══"
+              node scripts/orchestrate-story.js "$story_path"
+              git checkout main 2>/dev/null || true
+              git pull origin main 2>/dev/null || true
+            fi
+          done
+
+      - name: Run Orchestrator REMOVAL for deleted stories
+        if: steps.detect.outputs.deleted != ''
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          BASE_COMMIT=$(git rev-parse HEAD~1)
+          echo "${{ steps.detect.outputs.deleted }}" | while IFS= read -r story_path; do
+            if [ -n "$story_path" ]; then
+              echo "═══ 🗑️ REMOVING: $story_path ═══"
+              node scripts/orchestrate-story.js --remove --base-commit "$BASE_COMMIT" "$story_path"
+              git checkout main 2>/dev/null || true
+              git pull origin main 2>/dev/null || true
+            fi
+          done

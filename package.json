@@ -1,0 +1,31 @@
+{
+  "name": "@ydax/prac-kit",
+  "version": "1.0.0",
+  "description": "Product Requirements as Code — autonomous development toolkit",
+  "main": "lib/shared.js",
+  "bin": {
+    "prac": "./bin/prac.js"
+  },
+  "scripts": {
+    "test": "echo \"Tests coming soon\" && exit 0"
+  },
+  "keywords": [
+    "prac",
+    "autonomous",
+    "development",
+    "agent",
+    "jules",
+    "linear",
+    "gherkin",
+    "blueprint"
+  ],
+  "author": "PDJ <pdj@ydax.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ydax/prac-kit.git"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

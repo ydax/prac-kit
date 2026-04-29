@@ -1,0 +1,7 @@
+node_modules/
+.env
+.reviewer-state.json
+.jules-issue-body.tmp.md
+.orchestrator-pr-body.tmp.md
+*.log
+.DS_Store

@@ -1,0 +1,42 @@
+# .github/workflows/blueprint-merged.yml
+#
+# PRaC Post-Merge Handler for Blueprint PRs
+#
+# Trigger: PR closed (merged)
+# Filter:  Branch starts with orchestrator/blueprint-update- or -removal-
+# Action:  Creates Linear issue and queues for Jules
+#
+# Install via: npx @ydax/prac-kit init
+
+name: Blueprint Merged — Trigger Implementation
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  trigger-implementation:
+    if: >
+      github.event.pull_request.merged == true &&
+      (startsWith(github.event.pull_request.head.ref, 'orchestrator/blueprint-update-') ||
+       startsWith(github.event.pull_request.head.ref, 'orchestrator/blueprint-removal-'))
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run post-merge handler
+        env:
+          LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
+          JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          echo "Blueprint PR #${PR_NUMBER} merged. Triggering implementation..."
+          node scripts/on-blueprint-merge.js "$PR_NUMBER"

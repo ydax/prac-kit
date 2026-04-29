@@ -1,0 +1,50 @@
+# .github/workflows/nightly.yml
+#
+# PRaC Nightly Test Loop
+#
+# Runs the test suite nightly. On failure, creates a Linear issue
+# for Jules to fix autonomously.
+#
+# Install via: npx @ydax/prac-kit init
+
+name: Nightly Test Loop
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Tests
+        run: npm run test:ci
+
+      - name: Create Linear Issue on Failure
+        if: failure()
+        env:
+          LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
+        run: |
+          node -e "
+            const shared = require('./scripts/shared');
+            shared.loadEnv();
+            const config = shared.loadConfig();
+            shared.createLinearIssue(
+              'Nightly Test Failure',
+              '## Nightly Test Failure\n\nThe nightly test suite failed. Check the [workflow run](' +
+              'https://github.com/' + config.repo + '/actions/runs/' + process.env.GITHUB_RUN_ID +
+              ') for details.\n\n### Instructions\n1. Diagnose the failure.\n2. Write a fix.\n3. Ensure all tests pass.',
+            ).then(issue => console.log('Created:', issue.identifier));
+          "
