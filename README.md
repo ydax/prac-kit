@@ -99,6 +99,10 @@ The PRaC system is built on three invariants:
 2. **Tests before code.** Agents write failing tests first (Test-Driven Autonomy).
 3. **Docs as code.** Documentation lives entirely in the repository.
 
+## CHANGELOG
+
+- **v1.1.0** (2026-04-29): Added the `prac config` command. This interactive CLI walkthrough allows you to quickly scaffold and set custom values in your `prac.config.js` while keeping models and workflow behaviors grouped as defaults.
+
 ## License
 
 MIT
