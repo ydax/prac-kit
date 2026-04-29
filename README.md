@@ -1,32 +1,40 @@
 # PRaC Kit
 
-**Product Requirements as Code** — An autonomous development toolkit.
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![npm version](https://img.shields.io/npm/v/prac-kit.svg)](https://www.npmjs.com/package/prac-kit)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D20-brightgreen.svg)](https://nodejs.org)
 
-PRaC Kit packages the closed-loop autonomous development system into a portable, versioned toolkit that can be installed in any repository.
+**Product Requirements as Code** — An open-source toolkit that turns your GitHub repository into a self-managing autonomous development system.
 
-## What It Does
+PRaC Kit gives any repository a closed-loop pipeline: you write a user Story in markdown, an AI generates the implementation contract (Blueprint), another AI writes tests-first code, and a third AI reviews and merges the PR — all triggered by a `git push`.
 
-PRaC Kit gives your repository an autonomous development pipeline:
+## How It Works
 
 ```
 Human writes Story → Orchestrator generates Blueprint PR → Jules writes tests →
 Jules implements → Automated Reviewer merges or sends feedback → Next task triggers
 ```
 
+The system is built on three invariants:
+
+1. **Blueprint is the contract.** No code is written without a `BLUEPRINT.md` entry.
+2. **Tests before code.** Agents write failing tests first (Test-Driven Autonomy).
+3. **Docs as code.** Requirements live entirely in the repository, not in external tools.
+
 ## Quick Start
 
 ```bash
 # Initialize PRaC in your repository
-npx @ydax/prac-kit init
+npx prac-kit init
 
-# Edit the generated config file
-vim prac.config.js
+# Configure your repo-specific values interactively
+npx prac-kit config
 
 # Create your first epic
-npx @ydax/prac-kit epic create my-feature
+npx prac-kit epic create my-feature
 
 # Validate your setup
-npx @ydax/prac-kit doctor
+npx prac-kit doctor
 ```
 
 ## What Gets Installed
@@ -36,8 +44,8 @@ your-repo/
 ├── prac.config.js                    ← repo-specific configuration
 ├── scripts/
 │   ├── shared.js                     ← shared utilities (config-driven)
-│   ├── orchestrate-story.js          ← Story → Blueprint translation
-│   ├── review-pr.js                  ← automated PR reviewer
+│   ├── orchestrate-story.js          ← Story → Blueprint translation via Gemini
+│   ├── review-pr.js                  ← LLM-powered automated PR reviewer
 │   ├── trigger-jules.js              ← Jules REST API trigger
 │   ├── kickoff-sprint.js             ← priority cascade kickoff
 │   ├── on-blueprint-merge.js         ← post-merge Linear issue creation
@@ -46,9 +54,9 @@ your-repo/
 │   ├── orchestrator.yml              ← detects Story changes on push
 │   ├── reviewer.yml                  ← reviews Jules PRs automatically
 │   ├── blueprint-merged.yml          ← triggers Jules after Blueprint merge
-│   └── nightly.yml                   ← nightly test suite
+│   └── nightly.yml                   ← nightly test suite with self-healing
 └── epics/
-    └── STORY_TEMPLATE.md             ← template for new stories
+    └── STORY_TEMPLATE.md             ← template for new user stories
 ```
 
 ## Commands
@@ -56,6 +64,7 @@ your-repo/
 | Command | Description |
 |---------|-------------|
 | `prac init` | Initialize PRaC in the current repository |
+| `prac config` | Interactive walkthrough to set up `prac.config.js` |
 | `prac update` | Update scripts and workflows to latest version |
 | `prac epic create <name>` | Scaffold a new epic directory |
 | `prac doctor` | Validate configuration and report drift |
@@ -66,10 +75,10 @@ All repo-specific values live in `prac.config.js`:
 
 ```javascript
 module.exports = {
-  repo: 'ydax/my-repo',
-  linearTeamKey: 'MYR',
+  repo: 'your-org/your-repo',
+  linearTeamKey: 'YOUR',
   linearTeamId: 'uuid-from-linear',
-  projectName: 'My Project',
+  projectName: 'Your Project',
   orchestratorModel: 'gemini-3-pro-preview',
   reviewerModel: 'gemini-3-flash-preview',
   autoMergeBlueprints: true,
@@ -81,28 +90,30 @@ module.exports = {
 
 ## Requirements
 
-- Node.js 20+
-- GitHub CLI (`gh`) authenticated
-- API keys in `.env`: `LINEAR_API_KEY`, `JULES_API_KEY`, `GEMINI_API_KEY`
-- Same keys in GitHub repository secrets
+- **Node.js 20+**
+- **GitHub CLI** (`gh`) authenticated
+- **API keys** in `.env` and GitHub repository secrets:
+  - `LINEAR_API_KEY` — [Linear API](https://linear.app/settings/api)
+  - `JULES_API_KEY` — [Jules API](https://jules.google.com/settings#api)
+  - `GEMINI_API_KEY` — [Google AI Studio](https://aistudio.google.com/apikey)
 
 ## Documentation
 
-- [Operational Guide](docs/operational-guide.md) — How the system works day-to-day
-- [prac.config.example.js](prac.config.example.js) — All configuration options
+- [Operational Guide](docs/operational-guide.md) — How the autonomous loop works day-to-day
+- [Configuration Reference](prac.config.example.js) — All configurable values with documentation
+- [Changelog](CHANGELOG.md) — Version history
 
-## Architecture
+## Contributing
 
-The PRaC system is built on three invariants:
+We welcome contributions! Please read our [Contributing Guide](CONTRIBUTING.md)
+and [Code of Conduct](CODE_OF_CONDUCT.md) before submitting a pull request.
 
-1. **Blueprint is the contract.** No code is written without a `BLUEPRINT.md` entry.
-2. **Tests before code.** Agents write failing tests first (Test-Driven Autonomy).
-3. **Docs as code.** Documentation lives entirely in the repository.
+## Security
 
-## CHANGELOG
-
-- **v1.1.0** (2026-04-29): Added the `prac config` command. This interactive CLI walkthrough allows you to quickly scaffold and set custom values in your `prac.config.js` while keeping models and workflow behaviors grouped as defaults.
+To report a security vulnerability, please see our [Security Policy](SECURITY.md).
 
 ## License
 
-MIT
+Copyright 2026 YDAX, Inc.
+
+Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for the full text.
