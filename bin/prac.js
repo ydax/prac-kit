@@ -305,7 +305,7 @@ async function cmdConfig() {
   const blueprintInstructions = currentConfig.blueprintInstructions || [
     'Read `AGENTS.md` first — it is the universal entry point.',
     'Follow TDA: write failing tests first, then implement.',
-    'JavaScript only — no TypeScript.',
+    'Update the source STORY.md status to `in_progress` in your first commit, and to `done` in your final commit before opening the PR.',
   ];
 
   const testCommands = currentConfig.testCommands || [

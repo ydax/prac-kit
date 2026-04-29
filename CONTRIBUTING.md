@@ -49,7 +49,7 @@ node /path/to/prac-kit/bin/prac.js doctor
 
 ## Style Guide
 
-- **JavaScript only.** No TypeScript.
+- **JavaScript only** (for prac-kit's own codebase). No TypeScript in this repo.
 - **JSDoc comments** on all exported functions.
 - **No external dependencies.** PRaC Kit uses only Node.js built-in modules.
 - **Config-driven.** All repo-specific values must come from `prac.config.js`, never hardcoded.

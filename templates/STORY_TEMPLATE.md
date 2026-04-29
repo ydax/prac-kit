@@ -91,3 +91,14 @@ done → sunset (for experimental features being removed)
 | `done` | Implementation merged, tests passing, feature live. |
 | `blocked` | Cannot proceed — dependency not shipped. |
 | `sunset` | Experimental feature being removed. Triggers reverse cascade. |
+
+### Agent-Managed Transitions
+
+When Jules (or another AI agent) implements a story, it is expected to
+update the YAML `status` field as part of its commits:
+
+1. **First commit:** Change `status` from `ready` to `in_progress`.
+2. **Final commit (before opening the PR):** Change `status` to `done`.
+
+This keeps the Markdown files in sync with the Linear execution layer
+without requiring a background webhook to rewrite files.

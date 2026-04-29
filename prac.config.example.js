@@ -27,7 +27,7 @@ module.exports = {
   blueprintInstructions: [
     'Read `AGENTS.md` first — it is the universal entry point.',
     'Follow TDA: write failing tests first, then implement.',
-    'JavaScript only — no TypeScript.',
+    'Update the source STORY.md status to `in_progress` in your first commit, and to `done` in your final commit before opening the PR.',
   ],
 
   // ── LLM Models ────────────────────────────────────────────────────────────
