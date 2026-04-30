@@ -48,6 +48,13 @@ module.exports = {
     done: null,                      // UUID of your "Done" state (null = use default)
   },
 
+  // ── Stitch Design Integration ─────────────────────────────────────────────
+  // Optional configuration for Google Stitch UI generation
+  stitch: {
+    enabled: false,
+    designSystemContext: 'docs/DESIGN.md', // File containing global design tokens to feed to Stitch
+  },
+
   // ── Test Commands ─────────────────────────────────────────────────────────
   // Commands the nightly loop runs. Set to null to skip.
   testCommands: [

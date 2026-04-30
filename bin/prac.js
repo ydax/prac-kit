@@ -118,7 +118,9 @@ function cmdInit() {
   console.log(`  1. Edit prac.config.js with your repo values`);
   console.log(`  2. Set LINEAR_API_KEY and JULES_API_KEY in .env`);
   console.log(`  3. Add secrets to GitHub repo settings`);
-  console.log(`  4. Create your first epic: prac epic create my-feature`);
+  console.log(`  4. Go to Settings > Actions > General > Workflow permissions`);
+  console.log(`     and check "Allow GitHub Actions to create and approve pull requests"`);
+  console.log(`  5. Create your first epic: prac epic create my-feature`);
   console.log(`${'═'.repeat(50)}\n`);
 }
 
@@ -300,6 +302,13 @@ async function cmdConfig() {
     cascadeEnabled = cascade.toLowerCase() !== 'n';
   }
 
+  const enableStitch = await askQuestion(rl, "\nEnable Stitch Design Integration? (y/N)", "N");
+  const stitchEnabled = enableStitch.toLowerCase() === 'y';
+  let designSystemContext = 'docs/DESIGN.md';
+  if (stitchEnabled) {
+    designSystemContext = await askQuestion(rl, "Path to Design System context file", designSystemContext);
+  }
+
   rl.close();
 
   const blueprintInstructions = currentConfig.blueprintInstructions || [
@@ -348,6 +357,12 @@ module.exports = {
   linearStates: {
     inProgress: ${inProgress ? `'${inProgress}'` : 'null'},
     done: ${done ? `'${done}'` : 'null'},
+  },
+
+  // ── Stitch Design Integration ─────────────────────────────────────────────
+  stitch: {
+    enabled: ${stitchEnabled},
+    designSystemContext: '${designSystemContext}',
   },
 
   // ── Test Commands ─────────────────────────────────────────────────────────
@@ -411,6 +426,29 @@ function cmdDoctor() {
     } else {
       console.log(`   ❌ .github/workflows/${w} missing`);
       issues++;
+    }
+  }
+
+  // Check GitHub Actions Permissions
+  if (configPath && fs.existsSync(configPath)) {
+    const config = require(configPath);
+    if (config.repo && config.repo !== 'ydax/my-repo') {
+      try {
+        const { execSync } = require('child_process');
+        const output = execSync(`gh api /repos/${config.repo}/actions/permissions/workflow`, { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'ignore'] });
+        const json = JSON.parse(output);
+        if (json.can_approve_pull_request_reviews === true) {
+          console.log(`   ✅ GitHub Actions can create and approve PRs`);
+        } else {
+          console.log(`   ❌ GitHub Actions cannot approve PRs`);
+          console.log(`      Fix: Go to https://github.com/${config.repo}/settings/actions`);
+          console.log(`      and check "Allow GitHub Actions to create and approve pull requests"`);
+          issues++;
+        }
+      } catch (err) {
+        console.log(`   ⚠️  Could not verify GitHub Actions permissions automatically (requires 'gh' CLI).`);
+        console.log(`      Verify manually at https://github.com/${config.repo}/settings/actions`);
+      }
     }
   }
 
