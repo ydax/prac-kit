@@ -55,6 +55,19 @@ module.exports = {
     designSystemContext: 'docs/DESIGN.md', // File containing global design tokens to feed to Stitch
   },
 
+  // ── Question Responder ─────────────────────────────────────────────────────
+  // Automatically answers Jules' blocking questions using repo context + LLM.
+  // Opt-in per repo. Only responds when confidence is HIGH.
+  questionResponder: {
+    enabled: false,                    // opt-in per repo
+    responderModel: 'gemini-3-flash-preview',
+    confidenceThreshold: 'HIGH',      // only auto-respond at this level ('HIGH' or 'MEDIUM')
+    pollScheduleCron: '*/30 * * * *', // how often the cron workflow runs
+    maxAutoResponses: 5,              // per day, safety valve
+    escalationLabel: 'jules-blocked', // GitHub Issue label for escalations
+    contextFiles: [],                 // additional files to always include in context
+  },
+
   // ── Test Commands ─────────────────────────────────────────────────────────
   // Commands the nightly loop runs. Set to null to skip.
   testCommands: [

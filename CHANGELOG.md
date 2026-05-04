@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-05-04
+
+### Added
+- **Question Responder:** New `question-responder.js` script that polls for
+  Jules sessions in `AWAITING_USER_FEEDBACK` state, builds repo context
+  (AGENTS.md, stories, blueprints, source files), and uses Gemini to either
+  auto-respond (HIGH confidence) or escalate to a human via GitHub Issue.
+- New GitHub Actions workflow template: `question-responder.yml` (30-minute cron).
+- New `questionResponder` config section in `prac.config.js` with safety controls:
+  `confidenceThreshold`, `maxAutoResponses`, `escalationLabel`, `contextFiles`.
+- New Jules API helpers in `shared.js`: `julesListSessions()`, `julesListActivities()`.
+
 ## [1.1.0] - 2026-04-29
 
 ### Added

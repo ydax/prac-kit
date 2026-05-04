@@ -1,6 +1,6 @@
 {
   "name": "@ydax/prac-kit",
-  "version": "1.1.5",
+  "version": "1.2.0",
   "description": "Product Requirements as Code — an open-source toolkit that turns your GitHub repository into a self-managing autonomous development system",
   "main": "lib/shared.js",
   "bin": {

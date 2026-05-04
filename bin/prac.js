@@ -65,6 +65,7 @@ function cmdInit() {
     'on-blueprint-merge.js',
     'review-pr.js',
     'create-linear-cascade.js',
+    'question-responder.js',
   ];
   for (const script of scripts) {
     copyFile(
@@ -75,7 +76,7 @@ function cmdInit() {
 
   // 3. Copy workflows
   console.log(`\n⚙️  Installing GitHub Actions workflows...`);
-  const workflows = ['orchestrator.yml', 'reviewer.yml', 'blueprint-merged.yml', 'nightly.yml'];
+  const workflows = ['orchestrator.yml', 'reviewer.yml', 'blueprint-merged.yml', 'nightly.yml', 'question-responder.yml'];
   for (const wf of workflows) {
     const src = path.join(PRAC_KIT_ROOT, 'workflows', wf);
     if (fs.existsSync(src)) {
@@ -132,7 +133,7 @@ function cmdUpdate() {
   const scripts = [
     'shared.js', 'trigger-jules.js', 'kickoff-sprint.js',
     'orchestrate-story.js', 'on-blueprint-merge.js', 'review-pr.js',
-    'create-linear-cascade.js',
+    'create-linear-cascade.js', 'question-responder.js',
   ];
 
   console.log(`📜 Scripts:`);
@@ -144,7 +145,7 @@ function cmdUpdate() {
   }
 
   console.log(`\n⚙️  Workflows:`);
-  const workflows = ['orchestrator.yml', 'reviewer.yml', 'blueprint-merged.yml', 'nightly.yml'];
+  const workflows = ['orchestrator.yml', 'reviewer.yml', 'blueprint-merged.yml', 'nightly.yml', 'question-responder.yml'];
   for (const wf of workflows) {
     const src = path.join(PRAC_KIT_ROOT, 'workflows', wf);
     if (fs.existsSync(src)) {

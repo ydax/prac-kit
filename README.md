@@ -8,6 +8,8 @@
 
 PRaC Kit gives any repository a closed-loop pipeline: you write a user Story in markdown, an AI generates the implementation contract (Blueprint), another AI writes tests-first code, and a third AI reviews and merges the PR — all triggered by a `git push`.
 
+When Jules gets stuck and asks a question, the **Question Responder** uses repo context to auto-answer with high confidence or escalates to a human — keeping the autonomous loop moving.
+
 ## How It Works
 
 ```
@@ -54,6 +56,7 @@ your-repo/
 │   ├── orchestrator.yml              ← detects Story changes on push
 │   ├── reviewer.yml                  ← reviews Jules PRs automatically
 │   ├── blueprint-merged.yml          ← triggers Jules after Blueprint merge
+│   ├── question-responder.yml        ← auto-answers Jules' blocking questions
 │   └── nightly.yml                   ← nightly test suite with self-healing
 └── epics/
     └── STORY_TEMPLATE.md             ← template for new user stories
